@@ -94,6 +94,7 @@ summary(model23)
 model24=lm(formula= nvda_ret ~ bic_ret + eth_ret + lit_ret+usd_ret + gold_ret + oil_ret )
 summary(model24)
 
+install.packages(zoo)
 require(zoo)
 bic_ret = zoo(c(bic_ret))
 eth_ret = zoo(c(eth_ret))
@@ -273,17 +274,15 @@ ts.tsmc = tsmc_ret_nn[-id7,]
 
 
 #建構倒傳遞NN模型
-attach(tr.amd)
+#attach(tr.amd)
 tr.amd<- na.omit(tr.amd)
 result1=neuralnet(amd_ret_d ~ c.lag.amd_ret...1..+lag.bic_ret...1.+lag.eth_ret...1.+lag.lit_ret...1.+lag.usd_ret...1.+lag.gold_ret...1.+lag.oil_ret...1.+lag.us_ret...1.+lag.tw_ret...1., hidden = c(8,9),data=tr.amd)
-result_num1=neuralnet(amd_ret ~ c.lag.amd_ret...1..+lag.bic_ret...1.+lag.eth_ret...1.+lag.lit_ret...1.+lag.usd_ret...1.+lag.gold_ret...1.+lag.oil_ret...1.+lag.us_ret...1.+lag.tw_ret...1., hidden = c(8,9),data=tr.amd)
 
 #print(result1)
 #plot(result1)
 
 tr.Asr<- na.omit(tr.Asr)
 result2=neuralnet(Asr_ret_d ~  c.lag.Asr_ret...1..+lag.bic_ret...1.+lag.eth_ret...1.+lag.lit_ret...1.+lag.usd_ret...1.+lag.gold_ret...1.+lag.oil_ret...1.+lag.us_ret...1.+lag.tw_ret...1., hidden = c(8,8),data=tr.Asr)
-result_num2=neuralnet(Asr_ret ~ c.lag.amd_ret...1..+lag.bic_ret...1.+lag.eth_ret...1.+lag.lit_ret...1.+lag.usd_ret...1.+lag.gold_ret...1.+lag.oil_ret...1.+lag.us_ret...1.+lag.tw_ret...1., hidden = c(8,9),data=tr.Asr)
 
 tr.chain<- na.omit(tr.chain)
 result3=neuralnet(chain_ret_d ~ c.lag.chain_ret...1..+lag.bic_ret...1.+lag.eth_ret...1.+lag.lit_ret...1.+lag.usd_ret...1.+lag.gold_ret...1.+lag.oil_ret...1.+lag.us_ret...1.+lag.tw_ret...1., hidden = c(8,8),data=tr.chain)
@@ -882,6 +881,13 @@ cat(paste0("*********策略回測績效*********\n",
 buyprice_amd = ifelse(amdpredict==1,dplyr::lead(Pro$AMD),0)
 sellprice_amd= ifelse(amdpredict==1,Pro$AMD,0)
 #amdprofit=sellprice_amd*(1-0.003)/(buyprice_amd*(1+0.003))-1
-amd_fc = function(x){ifelse(amdpredict1>0.015,1,0)}
-amd_bsig = lag(apply(Pro[1:803,]),1,amd_fc)
+amd_fc = function(x){ ifelse(amdpredict1>0.015,1,0) }
+amd_bsig = sapply(Pro[1:803,],amd_fc)
 amd_ssig = apply( )    
+
+install.packages("reticulate")
+library("reticulate")
+install.packages("os")
+conda_create("r-reticulate")
+conda_install("r-reticulate","numpy")
+
